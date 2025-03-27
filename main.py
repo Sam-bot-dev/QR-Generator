@@ -1,39 +1,31 @@
-
 import qrcode
 from PIL import Image
+import base64
+from io import BytesIO
 
-def create_qr_code(image_path, output_path):
-    # Create QR code instance with optimal settings for images
-    qr = qrcode.QRCode(
-        version=None,  # Auto-determine version
-        error_correction=qrcode.constants.ERROR_CORRECT_H,  # Higher error correction for images
-        box_size=10,
-        border=4,
-    )
-    
-    # Read the image in binary mode
-    with open(image_path, "rb") as image_file:
-        image_data = image_file.read()
-    
-    # Add the binary data to QR code
-    qr.add_data(image_data)
-    qr.make(fit=True)
-    
-    # Create the QR code image
-    qr_image = qr.make_image(fill_color="black", back_color="white")
-    
-    # Save the QR code
-    qr_image.save(output_path)
-    print(f"QR code saved as {output_path}")
-    
-    return qr_image
+# Step 1: Load your image and convert it to base64
+image_path = "test-image.jpg"  # Replace with your image path
+with open(image_path, "rb") as img_file:
+    # Convert image to base64
+    img_base64 = base64.b64encode(img_file.read()).decode('utf-8')
 
-# Generate QR code from the image
-input_image = "test-image.jpg"
-output_qr = "qr_code_output.png"
+# Step 2: Generate a QR code with the base64 string
+qr = qrcode.QRCode(
+    version=1,  # Controls the size of the QR code (1 is the smallest)
+    error_correction=qrcode.constants.ERROR_CORRECT_L,  # Error correction level
+    box_size=10,  # Size of each box in the QR code
+    border=4,  # Thickness of the border
+)
 
-try:
-    qr_image = create_qr_code(input_image, output_qr)
-    qr_image.show()  # Display the QR code
-except Exception as e:
-    print(f"Error generating QR code: {e}")
+# Add the base64-encoded image data to the QR code
+qr.add_data(img_base64)
+qr.make(fit=True)
+
+# Step 3: Create an image from the QR code
+qr_img = qr.make_image(fill='black', back_color='white')
+
+# Save the QR code as a PNG image
+qr_img.save("image_to_qr_code.png")
+
+# Show the QR code (optional)
+qr_img.show()
