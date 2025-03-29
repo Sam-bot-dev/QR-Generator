@@ -1,7 +1,7 @@
 import pyqrcode
 import png
 # Input data
-data =("test-image.jpg")
+data ="Hello"
 
 # Create a QR code object
 qr = pyqrcode.create(data)
